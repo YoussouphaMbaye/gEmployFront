@@ -3,17 +3,21 @@ import React, { useEffect, useState } from 'react'
 import Pagination from '../component/Pagination';
 
 function ListMissingOrHier() {
-    const [emps, setEmps] = useState([]);
+    const [emps, setEmps] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(8);
     const [theDate, setTheDate] = useState("");
     const [codeEmp, setCodeEmp] = useState("");
+    const [nbEmp,setNbEmp]=useState(0);
     const [missOrhier, setMissOrhier] = useState("");
     const bUrl="http://localhost:5172"
 
     useEffect(()=>{
     
         getEmps()
+        if(emps!=null){
+          setNbEmp(emps['listEmp'].length);
+        }
         
       },[]);
     //===============
@@ -79,10 +83,34 @@ function ListMissingOrHier() {
         }
     const lastPostIndex = currentPage * postsPerPage;
     const firstPostIndex = lastPostIndex - postsPerPage;
-    const currentEmps = emps.slice(firstPostIndex, lastPostIndex);
+    let currentEmps = (emps!=null)?emps['listEmp'].slice(firstPostIndex, lastPostIndex):null;
+    
 
   return (
     <div className='container'>
+      <div className='c-search card-shadow'>
+<div className="my-row">
+<div className="col-sm-3 m-3">
+    <div className="static-card">
+      <h2>Employés</h2>
+      <h2 className='chif'>{nbEmp}</h2>
+    </div>
+</div>
+  <div className="col-sm-3 m-3">
+    <div className="static-card">
+      <h2>Présence</h2>
+      <h2 className='chif'>{emps!=null?emps['nbHier']:0}</h2>
+    </div>
+  </div>
+  <div className="col-sm-3 m-3">
+    <div className="static-card">
+      <h2>Départements</h2>
+      <h2 className='chif'>40</h2>
+    </div>
+  </div>
+  
+</div>
+</div>
         <div className="my-4 p-3 container-search">
   <div>
     <h5>Date</h5>
@@ -109,8 +137,8 @@ function ListMissingOrHier() {
         <tr>
             <th>id</th>
             <th>Nom</th>
-            <th>Email</th>
-            <th>Phone</th>
+            <th>Arrivé</th>
+            <th>Départ</th>
             <th>Présence</th>
             <th>Retard</th>
             {/* <th>Code employer</th>
@@ -120,13 +148,14 @@ function ListMissingOrHier() {
     </thead>
     
    <tbody>
-    {currentEmps.length > 0 ? currentEmps.map((e,i) => {
+    {currentEmps!=null ? currentEmps.map((e,i) => {
+      console.log(e.employer.IdEmp)
                  return <tr key={i}>
-                    <td>{e.employer.idEmp}</td>
-                    <td>{e.employer.nameEmp}</td>
-                    <td>{e.employer.emailEmp}</td>
-                    <td>{e.employer.phoneEmp}</td>
-                    <td>{e.hier}</td>
+                    <td>{i}</td>
+                    <td>{e.employer.NameEmp}</td>
+                    <td>{e.hourGetIn}</td>
+                    <td>{e.hourGetOut}</td>
+                    <td style={{backgroundColor: e.hier == 'Hier'? '#090': '#900'}}>{e.hier}</td>
                     <td>{e.late}</td>
                     {/* <td>{e.employer.codeEmp}</td> */}
                     <td>
@@ -140,9 +169,9 @@ function ListMissingOrHier() {
     </tbody>
     
 </table>
-
-<Pagination totalPosts={emps.length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
-   
+{currentEmps!=null ?
+<Pagination totalPosts={emps['listEmp'].length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
+   :""}
     </div>
   )
 }

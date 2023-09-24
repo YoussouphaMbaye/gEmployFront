@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import Pagination from '../component/Pagination';
 import ListHoraire from '../component/listHoraire';
 import person from '../img/person.jpg';
+import LisPholidays from '../component/listPholidays';
 export default function ListEmps() {
   let baseUrl='http://localhost:5172/api/Api'
   const bUrl='http://localhost:5172'
@@ -32,6 +33,7 @@ export default function ListEmps() {
   const [dayOffs, setDayOffs] = useState([]);
   const [dayOff, setDayOff] = useState("");
   const [horaire, setHoraires] = useState([]);
+  const [pHoliday, setPHoliday] = useState([]);
   const [listDayOfEmp, setListDayOfEmp] = useState([]);
   const [listDayOffDayEmp, setListDayOfFDayEmp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -323,14 +325,28 @@ export default function ListEmps() {
     });  
   if(response) {
     setHoraires(response.data);
+    console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+    console.log(response.data)
+  }
+  
+  }
+  //===============
+  const getPublicHolidays=async()=>{
+    const response = await axios.get(bUrl+"/GetPublicHolidays").catch((err) => {
+      console.log(err);
+      
+    });  
+  if(response) {
+    setPHoliday(response.data);
     console.log(response.data)
   }
   
   }
   useEffect(()=>{
     
-    getEmps(codeEmp,departement)
-    getHoraires()
+    getEmps(codeEmp,departement);
+    getHoraires();
+    getPublicHolidays();
   },[]);
   const deleteDayOff=async(idEmp,idDayOff)=>{
     if(window.confirm("Etes vous sure de vouloir supprimer")){
@@ -444,7 +460,17 @@ export default function ListEmps() {
 </table>
 
 <Pagination totalPosts={emps.length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
-      <ListHoraire listHoraires={horaire}/>
+      <div className='row'>
+        <div className='col'>
+        <ListHoraire listHoraires={horaire} getHoraires={getHoraires}/>
+        </div>
+        <div className='col'>
+        <LisPholidays listHoraires={pHoliday} getHolidays={getPublicHolidays}/>
+        </div>
+      </div>
+      
+      
+      
       <Modal show={showD} onHide={handleCloseD} className="modal-lg">
         <Modal.Header closeButton>
           <Modal.Title>Nouveau Congé</Modal.Title>
