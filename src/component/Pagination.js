@@ -22,7 +22,7 @@ const Pagination = ({
             {pages.map((page, index) => {
                 console.log(page)
                 return (
-                    <li key={index} className={page == currentPage ? "page-item active" : "page-item"} aria-current="page" onClick={() => setCurrentPage(page)}>
+                    <li key={index} className={page == currentPage ? "page-item active cliquable" : "page-item cliquable"} aria-current="page" onClick={() => setCurrentPage(page)}>
                         <a className="page-link">{page}</a>
                     </li>
                     

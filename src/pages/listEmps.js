@@ -7,6 +7,7 @@ import Pagination from '../component/Pagination';
 import ListHoraire from '../component/listHoraire';
 import person from '../img/person.jpg';
 import LisPholidays from '../component/listPholidays';
+import { Link } from 'react-router-dom';
 export default function ListEmps() {
   let baseUrl='http://localhost:5172/api/Api'
   const bUrl='http://localhost:5172'
@@ -97,12 +98,13 @@ export default function ListEmps() {
       dateStart:beginDay,
       dateEnd:endDay,
       active: true,
-      employerId: 38
+      employerId: idEmp
       
       },{header:header})
       .then(function (response) {
         //postRequest();
         console.log(response);
+        getDayOffDayEmmp(idEmp);
         handleCloseD();
         return response.data;
       })
@@ -122,6 +124,7 @@ export default function ListEmps() {
   };
   const handleShow = () => setShow(true);
   const viewShow = (id) => { 
+    setIdEmp(id)
     viewEmploy(id);
     getDayOffDayEmmp(id);
     getDayOffEmmp(id);
@@ -394,19 +397,19 @@ export default function ListEmps() {
   <div className="col-sm-3 m-3">
     <div className="static-card">
       <h2>Présence</h2>
-      <h2 className='chif'>{emps.length>0?emps.length:0}</h2>
+      <h2 className='chif1'>{emps.length>0?emps.length:0}</h2>
     </div>
   </div>
   <div className="col-sm-3 m-3">
     <div className="static-card">
       <h2>Départements</h2>
-      <h2 className='chif'>40</h2>
+      <h2 className='chif2'>40</h2>
     </div>
   </div>
   
 </div>
 </div>
-<div className="my-4 p-3 container-search">
+<div className="my-4 p-3 container-search card-shadow">
   <div>
     <h5>Départements</h5>
   <input type="text" placeholder="Search..." className='input-sh' onChange={(e)=>getEmps(codeEmp,e.target.value)} value={departement}/>
@@ -421,7 +424,7 @@ export default function ListEmps() {
   </div>
   <Button variant="primary" onClick={handleShow}>
   <i className="bi bi-database-add"></i>
-  New client
+  Nouveau employé
       </Button>
   {/* <a href="/Home/Create" className="btn btn-primary mb-1"> </a> */}
 <table className="table card-shadow mt-2 list-table">
@@ -446,9 +449,10 @@ export default function ListEmps() {
                     <td>{e.phoneEmp}</td>
                     <td>{e.codeEmp}</td>
                     <td>
-                    <i class="bi bi-eye btn btn-primary" onClick={()=>viewShow(e.idEmp)}></i>&nbsp;
+                    <i className="bi bi-eye btn btn-primary" onClick={()=>viewShow(e.idEmp)}></i>&nbsp;
                       <i className="bi bi-pencil-square btn btn-primary" onClick={()=>hanadleUpdate(e.idEmp)}></i>&nbsp;
                       <i className="bi bi-trash btn btn-danger " onClick={()=>handleDelete(e.idEmp)}></i> 
+                      <Link to={`empControle/${e.idEmp}`}> <i className="bi bi-file-earmark-fill btn btn-success "></i></Link>
                       {/* <i className="bi bi-trash btn btn-primary " onClick={()=>handleDayOff(e.idEmp)}></i> */}
                     </td>
                     <td><img src={e.urlQrcode} width="60px"/></td>
@@ -489,14 +493,11 @@ export default function ListEmps() {
           <Button variant="secondary" onClick={handleCloseD}>
             Close
           </Button>
-          {idEmp===1?
+          
           <Button variant="primary" onClick={postDayOffDay}>
             Ajouter
-          </Button>:
-          <Button variant="primary" onClick={postDayOffDay}>
-           Modifier
           </Button>
-          }
+          
         </Modal.Footer>
         </Modal>
 

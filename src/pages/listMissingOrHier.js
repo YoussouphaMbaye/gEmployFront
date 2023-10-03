@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import Pagination from '../component/Pagination';
+import { Button } from 'react-bootstrap';
 
 function ListMissingOrHier() {
     const [emps, setEmps] = useState(null);
@@ -8,18 +9,22 @@ function ListMissingOrHier() {
     const [postsPerPage, setPostsPerPage] = useState(8);
     const [theDate, setTheDate] = useState("");
     const [codeEmp, setCodeEmp] = useState("");
-    const [nbEmp,setNbEmp]=useState(0);
     const [missOrhier, setMissOrhier] = useState("");
+    const [nbEmp,setNbEmp]=useState(0);
     const bUrl="http://localhost:5172"
 
     useEffect(()=>{
     
-        getEmps()
+      const fetchData = async () => {
+        await getEmps()
         if(emps!=null){
-          setNbEmp(emps['listEmp'].length);
-        }
+          setNbEmp(emps['listEmpR'].length);
+      }
+      }
+      fetchData();
         
-      },[]);
+        
+      },[nbEmp]);
     //===============
     const getEmps=async()=>{
         const response = await axios.get(bUrl+"/missingOrHier").catch((err) => {
@@ -55,6 +60,7 @@ function ListMissingOrHier() {
                 let mm = newDate.getMonth(); // Months start at 0!
                 let dd = newDate.getDate();
                 if (dd < 10) dd = '0' + dd;
+                mm=mm+1
                 if (mm < 10) mm = '0' + mm;
                 console.log(yyyy+'-'+mm+'-'+dd)
                 formattedToday=yyyy+'-'+mm+'-'+dd;
@@ -83,12 +89,11 @@ function ListMissingOrHier() {
         }
     const lastPostIndex = currentPage * postsPerPage;
     const firstPostIndex = lastPostIndex - postsPerPage;
-    let currentEmps = (emps!=null)?emps['listEmp'].slice(firstPostIndex, lastPostIndex):null;
-    
+    const currentEmps = (emps !=null)?emps['listEmpR'].slice(firstPostIndex, lastPostIndex):[];
 
   return (
     <div className='container'>
-      <div className='c-search card-shadow'>
+       <div className='c-search card-shadow'>
 <div className="my-row">
 <div className="col-sm-3 m-3">
     <div className="static-card">
@@ -99,19 +104,14 @@ function ListMissingOrHier() {
   <div className="col-sm-3 m-3">
     <div className="static-card">
       <h2>Présence</h2>
-      <h2 className='chif'>{emps!=null?emps['nbHier']:0}</h2>
-    </div>
-  </div>
-  <div className="col-sm-3 m-3">
-    <div className="static-card">
-      <h2>Départements</h2>
-      <h2 className='chif'>40</h2>
+      <h2 className='chif1'>{emps!=null?emps.nbHier:0}</h2>
     </div>
   </div>
   
+  
 </div>
 </div>
-        <div className="my-4 p-3 container-search">
+        <div className="my-4 p-3 container-search card-shadow">
   <div>
     <h5>Date</h5>
   <input type="date" placeholder="Search..." className='input-sh' value={theDate} onChange={(e)=>getByDate(e.target.value,codeEmp,missOrhier)}/>
@@ -132,6 +132,7 @@ function ListMissingOrHier() {
     
     
   </div>
+  
         <table className="table card-shadow mt-2 list-table">
     <thead>
         <tr>
@@ -148,14 +149,14 @@ function ListMissingOrHier() {
     </thead>
     
    <tbody>
-    {currentEmps!=null ? currentEmps.map((e,i) => {
-      console.log(e.employer.IdEmp)
+    {currentEmps!=null > 0 ? currentEmps.map((e,i) => {
+      console.log(e['employer'].IdEmp);
                  return <tr key={i}>
-                    <td>{i}</td>
-                    <td>{e.employer.NameEmp}</td>
+                    <td>{e['employer'].idEmp}</td>
+                    <td>{e['employer'].nameEmp}</td>
                     <td>{e.hourGetIn}</td>
                     <td>{e.hourGetOut}</td>
-                    <td style={{backgroundColor: e.hier == 'Hier'? '#090': '#900'}}>{e.hier}</td>
+                    <td style={{backgroundColor: e.hier == 'Hier'? '#090': 'red'}} className='text-white'>{e.hier}</td>
                     <td>{e.late}</td>
                     {/* <td>{e.employer.codeEmp}</td> */}
                     <td>
@@ -169,9 +170,9 @@ function ListMissingOrHier() {
     </tbody>
     
 </table>
-{currentEmps!=null ?
-<Pagination totalPosts={emps['listEmp'].length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
-   :""}
+
+<Pagination totalPosts={(emps!=null)?emps['listEmpR'].length:0} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
+   
     </div>
   )
 }

@@ -1,20 +1,28 @@
 body{
   background-color: blue;
 }
-nav ul{
+.cliquable{
+  cursor: pointer;
+}
+nav div ul{
   display: flex;
   
 }
 nav{
   background-color: #fff;
   box-shadow: 3px 3px #fff;
+  display: flex;
+  align-content: space-around;
+  justify-content: space-between;
+  align-items: normal;
+  margin-bottom: 20px;
 }
 nav ul li{
-  margin: 10px;
+  margin: 7px;
   list-style: none;
   text-decoration: none;
   font-weight: bold;
-  font-size: 1em;
+  font-size: 0.8em;
   
 }
 .card-shadow {
@@ -32,16 +40,36 @@ nav ul li{
   justify-content: center;
 }
 .static-card{
-  border: 2px solid blue;
+  border: 1px solid rgba(0, 0, 255, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 20vh; 
+  border-right: 2px solid blue; 
+  padding: 15px;
   
 }
 .chif{
-  color: blue;
+  border-radius: 50%;
+  padding: 10px;
+  background: green;
+  color: white;
+}
+.chif1{
+  
+  border-radius: 50%;
+  padding: 10px;
+  background: rgb(165, 165, 43);
+  color: white;
+ 
+}
+.chif2{
+  
+  border-radius: 50%;
+  padding: 10px;
+  background: red;
+  color: white;
+ 
 }
 .input-sh{
   border: none;
