@@ -2,6 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import Pagination from '../component/Pagination';
 import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import NavbarCollapse from 'react-bootstrap/esm/NavbarCollapse';
+import Navabar from '../component/navabar';
 
 function ListMissingOrHier() {
     const [emps, setEmps] = useState(null);
@@ -11,20 +14,22 @@ function ListMissingOrHier() {
     const [codeEmp, setCodeEmp] = useState("");
     const [missOrhier, setMissOrhier] = useState("");
     const [nbEmp,setNbEmp]=useState(0);
-    const bUrl="http://localhost:5172"
+    const navigate = useNavigate();
+    const bUrl=process.env.REACT_APP_B_URL;
 
     useEffect(()=>{
-    
+      if(sessionStorage.getItem("access_token")==null || sessionStorage.getItem("access_token")==""){
+
+        navigate('/login');
+      }
       const fetchData = async () => {
         await getEmps()
-        if(emps!=null){
-          setNbEmp(emps['listEmpR'].length);
-      }
+        
       }
       fetchData();
         
         
-      },[nbEmp]);
+      },[]);
     //===============
     const getEmps=async()=>{
         const response = await axios.get(bUrl+"/missingOrHier").catch((err) => {
@@ -33,7 +38,10 @@ function ListMissingOrHier() {
         });  
     if(response) {
         setEmps(response.data);
-        console.log(response.data)
+        
+          setNbEmp(response.data['listEmpR'].length);
+      
+        //console.log(response.data)
     }
     
     }
@@ -42,7 +50,7 @@ function ListMissingOrHier() {
   
         let tt=today.split("-");
         let formattedToday = tt[0]+ '-'+ tt[1] + '-' + tt[2] ;//value="2013-01-08"
-        console.log("my date : "+formattedToday);
+        //console.log("my date : "+formattedToday);
         setTheDate(formattedToday);
       
         }
@@ -62,7 +70,7 @@ function ListMissingOrHier() {
                 if (dd < 10) dd = '0' + dd;
                 mm=mm+1
                 if (mm < 10) mm = '0' + mm;
-                console.log(yyyy+'-'+mm+'-'+dd)
+                //console.log(yyyy+'-'+mm+'-'+dd)
                 formattedToday=yyyy+'-'+mm+'-'+dd;
                 setTheDate(formattedToday);
             }else{
@@ -84,7 +92,7 @@ function ListMissingOrHier() {
                 });  
             if(response) {
                 setEmps(response.data);
-                console.log(response.data)
+                //console.log(response.data)
             }
         }
     const lastPostIndex = currentPage * postsPerPage;
@@ -92,7 +100,10 @@ function ListMissingOrHier() {
     const currentEmps = (emps !=null)?emps['listEmpR'].slice(firstPostIndex, lastPostIndex):[];
 
   return (
+    <div className="">
+      <Navabar/>
     <div className='container'>
+     
        <div className='c-search card-shadow'>
 <div className="my-row">
 <div className="col-sm-3 m-3">
@@ -150,7 +161,7 @@ function ListMissingOrHier() {
     
    <tbody>
     {currentEmps!=null > 0 ? currentEmps.map((e,i) => {
-      console.log(e['employer'].IdEmp);
+      //console.log(e['employer'].IdEmp);
                  return <tr key={i}>
                     <td>{e['employer'].idEmp}</td>
                     <td>{e['employer'].nameEmp}</td>
@@ -173,6 +184,7 @@ function ListMissingOrHier() {
 
 <Pagination totalPosts={(emps!=null)?emps['listEmpR'].length:0} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
    
+    </div>
     </div>
   )
 }

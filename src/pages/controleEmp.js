@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Pagination from '../component/Pagination';
 import { useParams } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
+import Navabar from '../component/navabar';
 
 function ControlCode() {
     const [emps, setEmps] = useState([]);
@@ -14,7 +15,7 @@ function ControlCode() {
     const [nbEmp,setNbEmp]=useState(0);
     const [missOrhier, setMissOrhier] = useState("");
     const{id}=useParams();
-    const bUrl="http://localhost:5172"
+    const bUrl=process.env.REACT_APP_B_URL;
 
     useEffect(()=>{
     
@@ -25,7 +26,7 @@ function ControlCode() {
       },[theDate]);
     //===============
     const getEmps=async(theDate,theDate2,missOrhier)=>{
-        console.log("bbbbbbb");
+        //console.log("bbbbbbb");
         let formattedToday="";
         if(theDate==""){
             let newDate=new Date();
@@ -45,8 +46,8 @@ function ControlCode() {
             mmi=mmi+1;
             if (ddi < 10) ddi = '0' + ddi;
             if (mmi < 10) mmi = '0' + mmi;
-            console.log("-----------------");
-            console.log(yyyy+'-'+mm+'-'+dd)
+            //console.log("-----------------");
+            //console.log(yyyy+'-'+mm+'-'+dd)
             setTheDate2(yyyyi+'-'+mmi+'-'+ddi)
            formattedToday=yyyy+'-'+mm+'-'+dd;
             setTheDate(formattedToday);
@@ -70,7 +71,7 @@ function ControlCode() {
         });  
     if(response) {
         setEmps(response.data);
-        console.log(response.data)
+        //console.log(response.data)
     }
     
     }
@@ -79,7 +80,7 @@ function ControlCode() {
   
         let tt=today.split("-");
         let formattedToday = tt[0]+ '-'+ tt[1] + '-' + tt[2] ;//value="2013-01-08"
-        console.log("my date : "+formattedToday);
+        //console.log("my date : "+formattedToday);
         setTheDate(formattedToday);
       
         }
@@ -90,6 +91,8 @@ function ControlCode() {
     
 
   return (
+    <div className="">
+      <Navabar/>
     <div className='container'>
      
 
@@ -135,7 +138,7 @@ function ControlCode() {
     
    <tbody>
     {currentEmps!=null ? currentEmps.map((e,i) => {
-      console.log(e.employer.IdEmp)
+      //console.log(e.employer.IdEmp)
                  return <tr key={i}>
                     <td><i className="bi bi-calendar-check-fill text-primary" ></i>&nbsp;{e.theDate}</td>
                     <td>{e.employer.nameEmp}</td>
@@ -158,6 +161,7 @@ function ControlCode() {
 {currentEmps!=null ?
 <Pagination totalPosts={emps.length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>
    :""}
+    </div>
     </div>
   )
 }

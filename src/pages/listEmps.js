@@ -7,15 +7,19 @@ import Pagination from '../component/Pagination';
 import ListHoraire from '../component/listHoraire';
 import person from '../img/person.jpg';
 import LisPholidays from '../component/listPholidays';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Navabar from '../component/navabar';
+
 export default function ListEmps() {
-  let baseUrl='http://localhost:5172/api/Api'
-  const bUrl='http://localhost:5172'
+  console.log(process.env.REACT_APP_BASE_URL);
+  let baseUrl=process.env.REACT_APP_BASE_URL;
+  const bUrl=process.env.REACT_APP_B_URL;
   const [show, setShow] = useState(false);
   const [showDf, setShowDf] = useState(false);
   const [showD, setShowD] = useState(false);
   const [view, setView] = useState(false);
   const [nameEmp,setnameEmp]=useState("");
+
   
   const [email,setEmail]=useState("");
   const [phoneEmp,setPhoneEmp]=useState("");
@@ -39,6 +43,7 @@ export default function ListEmps() {
   const [listDayOffDayEmp, setListDayOfFDayEmp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(8);
+  const navigate = useNavigate();
   
   const handleDf=()=>{
     getDayOffs();
@@ -65,29 +70,29 @@ export default function ListEmps() {
   }
   const deactiveOrActiveDayOfDay=(id,idEmp)=>{
     axios.put(bUrl+'/DeactiveDayOfDay?id='+id).then((res)=>{
-      console.log(res);
+      //console.log(res);
       getDayOffDayEmmp(idEmp);
 
     }).catch((err)=>{
-      console.log(err);
+      //console.log(err);
     })
   }
   const postDayOf=(id)=>{
-    console.log("mmmmmmmmmmmm"+ dayOff);
-    console.log("mmmmmmmmmmmm"+ id);
+    //console.log("mmmmmmmmmmmm"+ dayOff);
+    //console.log("mmmmmmmmmmmm"+ id);
     axios.post(bUrl+"/PostDayOffEmployer", {
       idEmp: id,
       idDayOff: dayOff
       },{header:header})
       .then(function (response) {
         //postRequest();
-        console.log(response);
+        //console.log(response);
         getDayOffEmmp(id)
         handleCloseDf();
         //return response.data;
       })
       .catch(function (error) {
-        console.log(error);
+        //console.log(error);
       });
 
   }
@@ -103,7 +108,7 @@ export default function ListEmps() {
       },{header:header})
       .then(function (response) {
         //postRequest();
-        console.log(response);
+       // console.log(response);
         getDayOffDayEmmp(idEmp);
         handleCloseD();
         return response.data;
@@ -129,16 +134,16 @@ export default function ListEmps() {
     getDayOffDayEmmp(id);
     getDayOffEmmp(id);
     setView(true);
-    console.log("=========================ppppppppppppppppppppppp==========");
+    //console.log("=========================ppppppppppppppppppppppp==========");
     
   }
   const formateDate=(today)=>{
       let formattedToday="";
       if(today!=""){
-        console.log("nnn: "+today);
+        //console.log("nnn: "+today);
         let tt=today.split("-");
         formattedToday = tt[0]+ '-'+ tt[1] + '-' + tt[2].substring(0, 2);
-        console.log("my date : "+formattedToday);
+        //console.log("my date : "+formattedToday);
         setBirthDay(formattedToday);
       } 
       setBirthDay(formattedToday);
@@ -147,13 +152,13 @@ export default function ListEmps() {
   
       let tt=today.split("-");
       let formattedToday = tt[0]+ '-'+ tt[1] + '-' + tt[2] ;//value="2013-01-08"
-      console.log("my date : "+formattedToday);
+      //console.log("my date : "+formattedToday);
       setBeginDay(formattedToday);
     
       }
       const formateEndDate=(today)=>{
         let tt=today.split("-");
-        console.log(today);
+        //console.log(today);
         // const yyyy = today.getFullYear();
         // let mm = today.getMonth(); // Months start at 0!
         // let dd = today.getDate();
@@ -182,8 +187,9 @@ export default function ListEmps() {
     setPhoneEmp(response.data["phoneEmp"])
     setOccupation(response.data["occupation"])
     setIdHoraire(response.data["horaireId"])
+    setStatus(response.data["status"])
     
-    console.log(response.data)
+    //console.log(response.data)
   }
     
   }
@@ -194,7 +200,7 @@ export default function ListEmps() {
       emailEmp: email,
       phoneEmp: phoneEmp,
       birthDay: birthDay,
-      status: true,
+      status: status,
       occupation: occupation,
       codeEmp: '',
       horaireId:idHoraire,
@@ -205,8 +211,9 @@ export default function ListEmps() {
       },{header:header})
       .then(function (response) {
         //postRequest();
-        console.log(response);
+        //console.log(response);
         handleClose();
+        getEmps(codeEmp,departement);
         return response.data;
       })
       .catch(function (error) {
@@ -222,7 +229,7 @@ export default function ListEmps() {
     });  
   if(response) {
     setEmploye(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   }
     
@@ -232,24 +239,25 @@ export default function ListEmps() {
     };
   const postRequest=()=>{
     //e.preventDefault();
-    console.log("===================================");
+    //console.log("===================================");
     axios.post(baseUrl, {
     nameEmp: nameEmp,
     emailEmp: email,
     phoneEmp: phoneEmp,
     birthDay: birthDay,
-    status: true,
+    status: status,
     occupation: occupation,
     codeEmp: '',
     horaireId:idHoraire,
     urlPicture: '',
     urlQrcode: '',
     login:null
-    },{header:header})
+    },{headers:{ 'Authorization':sessionStorage.getItem('access_token') }})
     .then(function (response) {
       //postRequest();
-      console.log(response);
+      //console.log(response);
       handleClose();
+      getEmps(codeEmp,departement);
       return response.data;
     })
     .catch(function (error) {
@@ -264,7 +272,7 @@ export default function ListEmps() {
     });  
   if(response) {
     setDayOffs(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   
   }
@@ -284,13 +292,13 @@ export default function ListEmps() {
     if(departementt!=""){
       baseUrl+="departement="+departementt;
     }
-    const response = await axios.get(baseUrl).catch((err) => {
+    const response = await axios.get(baseUrl,{headers:{ 'Authorization':sessionStorage.getItem('access_token') }}).catch((err) => {
       console.log(err);
       
     });  
   if(response) {
     setEmps(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   
   }
@@ -303,7 +311,7 @@ export default function ListEmps() {
     });  
   if(response) {
     setListDayOfFDayEmp(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   
   }
@@ -316,7 +324,7 @@ export default function ListEmps() {
     });  
   if(response) {
     setListDayOfEmp(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   
   }
@@ -328,8 +336,8 @@ export default function ListEmps() {
     });  
   if(response) {
     setHoraires(response.data);
-    console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
-    console.log(response.data)
+    //console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+    //console.log(response.data)
   }
   
   }
@@ -341,12 +349,17 @@ export default function ListEmps() {
     });  
   if(response) {
     setPHoliday(response.data);
-    console.log(response.data)
+    //console.log(response.data)
   }
   
   }
   useEffect(()=>{
-    
+   // console.log("----------NNNNNNNNNNN------------")
+    //console.log(sessionStorage.getItem("access_token"))
+    if(sessionStorage.getItem("access_token")==='' ||sessionStorage.getItem("access_token")===null){
+      //console.log("----------GO GO GO ------------")
+      navigate('/login');
+    }
     getEmps(codeEmp,departement);
     getHoraires();
     getPublicHolidays();
@@ -359,20 +372,21 @@ export default function ListEmps() {
     });  
   if(response) {
     getDayOffEmmp(idEmp);
-    console.log(response)
+    //console.log(response)
   }
     }
 
   }
   const handleDelete=async(id)=>{
+    
     if(window.confirm("Etes vous sure de vouloir supprimer employé")){
-      const response = await axios.delete(baseUrl+'/'+id).catch((err) => {
-      console.log(err);
+      const response = await axios.put(bUrl+'/deactiveEmp?idEmp='+id,{},{headers:{ 'Authorization':sessionStorage.getItem('access_token') }}).catch((err) => {
+      //console.log(err);
       
     });  
   if(response) {
     getEmps(codeEmp,departement);
-    console.log(response)
+    //console.log(response)
   }
     }
 
@@ -382,11 +396,11 @@ export default function ListEmps() {
   const currentEmps = emps.slice(firstPostIndex, lastPostIndex);
   return (
     <div className="">
-      
+      <Navabar/>
       <div className="container">
  
 
-<div className='c-search card-shadow'>
+{/* <div className='c-search card-shadow'>
 <div className="my-row">
 <div className="col-sm-3 m-3">
     <div className="static-card">
@@ -408,7 +422,7 @@ export default function ListEmps() {
   </div>
   
 </div>
-</div>
+</div> */}
 <div className="my-4 p-3 container-search card-shadow">
   <div>
     <h5>Départements</h5>
@@ -452,7 +466,7 @@ export default function ListEmps() {
                     <i className="bi bi-eye btn btn-primary" onClick={()=>viewShow(e.idEmp)}></i>&nbsp;
                       <i className="bi bi-pencil-square btn btn-primary" onClick={()=>hanadleUpdate(e.idEmp)}></i>&nbsp;
                       <i className="bi bi-trash btn btn-danger " onClick={()=>handleDelete(e.idEmp)}></i> 
-                      <Link to={`empControle/${e.idEmp}`}> <i className="bi bi-file-earmark-fill btn btn-success "></i></Link>
+                      <Link to={`/empControle/${e.idEmp}`}> <i className="bi bi-file-earmark-fill btn btn-success "></i></Link>
                       {/* <i className="bi bi-trash btn btn-primary " onClick={()=>handleDayOff(e.idEmp)}></i> */}
                     </td>
                     <td><img src={e.urlQrcode} width="60px"/></td>
@@ -512,7 +526,7 @@ export default function ListEmps() {
             <option >Jour semaine</option>
             {
               dayOffs.length>0?dayOffs.map((d,i)=>{
-                return <option value={d.idDayOff}>{d.weeDay}</option>;
+                return <option value={d.idDayOff} key={i}>{d.weeDay}</option>;
             }):""
             }
               
@@ -552,7 +566,7 @@ export default function ListEmps() {
           <input type="date" placeholder="Phone" name="birthDate" className='form-control' onChange={(e)=>setBirthDay(e.target.value)} value={birthDay}/>
         </div>
         <div class="form-check mb-2">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e)=>setStatus(e.target.value)} value={status} checked={status}/>
+          <input type="checkbox" class="form-check-input" id="exampleCheck1" onChange={(e)=>setStatus(e.target.checked)} value={status} checked={status} />
           <label class="form-check-label" for="exampleCheck1">Statu</label>
         </div>
         <div class="form-group">
@@ -570,7 +584,7 @@ export default function ListEmps() {
           <option >Horaire</option>
           {
             horaire.map((h,i)=>(
-              <option value={h.idHoraire} selected={idHoraire == h.idHoraire}>{h.type}</option>
+              <option value={h.idHoraire} selected={idHoraire == h.idHoraire} key={i}>{h.type}</option>
             ))
           }
           </select>
@@ -643,7 +657,7 @@ export default function ListEmps() {
                   <tbody>
                     {
                       listDayOffDayEmp.map((l,i)=>{
-                        return<tr>
+                        return<tr key={i}>
                     
                         <td>{i}</td><td>{l.dateStart}</td><td>{l.dateEnd}</td><td style={{color:l.active?'green':'red'}}>{l.active?'Activé':"Désactivé"}</td>
                         <td><i className="btn btn-primary " onClick={()=>deactiveOrActiveDayOfDay(l.idDayOffDay,employe.idEmp)}>{l.active?'Désactivé':'Activé'}</i></td>
@@ -681,7 +695,7 @@ export default function ListEmps() {
                   <tbody>
                     {
                       listDayOfEmp.map((l,i)=>{
-                        return<tr>
+                        return<tr key={i}>
                     
                         <td>{i}</td><td>{l.dayOff['weeDay']}</td>
                         <td><i className="btn btn-danger " onClick={()=>deleteDayOff(employe.idEmp,l.idDayOff)}>Supprimé</i></td>

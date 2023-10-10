@@ -7,10 +7,11 @@ export default function Login() {
     const [password, setpassword] = useState("");
     const [error,setUError]=useState("");
     const navigate = useNavigate();
-    const burl = "http://localhost:5172/api/Api/login";
+    const burl = process.env.REACT_APP_B_URL+"/api/Api/login";
+    const baseUrl = process.env.REACT_APP_B_URL;
     const logIn = (e) => {
         e.preventDefault();
-        console.log("bbbbbbbbbbbbbbbbb");
+        //console.log("bbbbbbbbbbbbbbbbb");
         axios.post(burl,
             {
                 userName: username,
@@ -18,22 +19,39 @@ export default function Login() {
                 employ:null
             },{
             Authorization: localStorage.getItem('access_token')
-                ? 'Bearer ' + localStorage.getItem('access_token')
+                ? 'Bearer ' + sessionStorage.getItem('access_token')
                 : null,
             'Content-Type': 'application/json',
             accept: 'application/json',
         }).then((res)=>{
-            console.log(res);
-            localStorage.setItem('access_token','Bearer '+res);
-            console.log("BIEN BIEN BIEN")
+            //console.log("VOISCI LA REPONSE")
+            //console.log(res);
+            sessionStorage.setItem('access_token','Bearer '+res.data);
+           // console.log("BIEN BIEN BIEN")
+            getEmployByEmail(username);
             navigate('/');
             
         }).catch((err)=>{
             if(err['response']){
             setUError(err['response']['data']);
-            console.log(err['response']['data']);}
+            //console.log(err['response']['data']);
+          }
         })
     }
+    const getEmployByEmail=async(email)=>{
+      const response = await axios.get(baseUrl+'/GetEmployerByemail?email='+email).catch((err) => {
+        console.log(err);
+        
+      });  
+    if(response) {
+      
+      //console.log(response.data)
+      sessionStorage.setItem('name',response.data.nameEmp);
+      sessionStorage.setItem('idUser',response.data.idEmp);
+      //console.log(response.data.nameEmp);
+    }
+    }
+     
     return (
         <div className='contain'>
             
