@@ -6,7 +6,7 @@ function LisPholidays({listHoraires,getHolidays}) {
 const [showH, setShowH] = useState(false);
 const [dateH, setDateH] = useState("");
 
-const bUrl='http://localhost:5172'
+const bUrl=process.env.REACT_APP_B_URL;
 
 const viewShow=()=>{
   

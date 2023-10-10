@@ -9,7 +9,7 @@ function ListHoraire({listHoraires,getHoraires}) {
   const [bgTime, setBgTime] = useState("");
 const [endTime, setEndTime] = useState("");
 const [type, setType] = useState("");
-  const bUrl='http://localhost:5172'
+  const bUrl=process.env.REACT_APP_B_URL;
   const handleCloseH=()=>{
     setShowH(false);
     
