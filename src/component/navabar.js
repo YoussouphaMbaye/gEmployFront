@@ -35,7 +35,7 @@ function Navabar() {
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
     <li>{sessionStorage.getItem('name')}</li>
-    <li className='btn btn-danger' onClick={()=>logOut()}>log out</li>
+    <li className='btn btn-danger' onClick={()=>logOut()}>Déconnection</li>
     
   </ul>
 </div>

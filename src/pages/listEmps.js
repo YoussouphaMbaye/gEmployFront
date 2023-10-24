@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +9,8 @@ import person from '../img/person.jpg';
 import LisPholidays from '../component/listPholidays';
 import { Link, useNavigate } from 'react-router-dom';
 import Navabar from '../component/navabar';
+import ListDep from '../component/listDepts';
+
 
 export default function ListEmps() {
   console.log(process.env.REACT_APP_BASE_URL);
@@ -19,6 +21,7 @@ export default function ListEmps() {
   const [showD, setShowD] = useState(false);
   const [view, setView] = useState(false);
   const [nameEmp,setnameEmp]=useState("");
+  const [profile,setProfile]=useState("");
 
   
   const [email,setEmail]=useState("");
@@ -27,12 +30,13 @@ export default function ListEmps() {
   const [beginDay,setBeginDay]=useState("");
   const [endDay,setEndDay]=useState("");
   const [status,setStatus]=useState(true);
-  const [occupation,setOccupation]=useState(true);
+  const [occupation,setOccupation]=useState("");
   const [idHoraire,setIdHoraire]=useState("")
   const [employe,setEmploye]=useState(null);
   const [idEmp,setIdEmp]=useState(0);
   const [codeEmp,setCodeEmp]=useState("");
   const [departement,setDepartement]=useState("");
+  const [listDepartement,setListDepartement]=useState([]);
 
   const [emps, setEmps] = useState([]);
   const [dayOffs, setDayOffs] = useState([]);
@@ -43,6 +47,40 @@ export default function ListEmps() {
   const [listDayOffDayEmp, setListDayOfFDayEmp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(8);
+  const [showError, setShowErro] = useState(false);
+  const inputFile=useRef(null);
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+    setProfile(e.target.files[0]);
+    console.log(profile)
+    
+    console.log('formData');
+    const formData=new FormData();
+    formData.append('formFile',e.target.files[0],idEmp+'.jpg');
+    //formData.append('fileName',idEmp+'.jpg');
+    console.log(formData);
+    axios.post(bUrl+'/UploadFile',formData).then((res)=>{
+      console.log(res);
+      setView(false);
+      setTimeout(()=>{
+        viewShow(idEmp)
+      },1000)
+      
+      
+
+    }).catch((err)=>{
+      console.log(err);
+    })
+    }
+  };
+  const changerProfile=(idEmp)=>{
+    inputFile.current.click();
+    //handleFileChange(e);
+    
+  }
+  const handleCloseError=()=>{
+    setShowErro(false);
+  }
   const navigate = useNavigate();
   
   const handleDf=()=>{
@@ -93,6 +131,8 @@ export default function ListEmps() {
       })
       .catch(function (error) {
         //console.log(error);
+        handleCloseDf();
+        setShowErro(true);
       });
 
   }
@@ -105,6 +145,7 @@ export default function ListEmps() {
       active: true,
       employerId: idEmp
       
+      
       },{header:header})
       .then(function (response) {
         //postRequest();
@@ -114,7 +155,9 @@ export default function ListEmps() {
         return response.data;
       })
       .catch(function (error) {
+        handleCloseD();
         console.log(error);
+        setShowErro(true);
       });
 
   }
@@ -125,11 +168,13 @@ export default function ListEmps() {
     setPhoneEmp("")
     setOccupation("")
     setIdHoraire("")
+    setIdEmp(0);
     setShow(false);
   };
   const handleShow = () => setShow(true);
   const viewShow = (id) => { 
-    setIdEmp(id)
+    console.log("mmmmmmmmmmmmmmmmmmmmmmmmmm")
+    setIdEmp(id);
     viewEmploy(id);
     getDayOffDayEmmp(id);
     getDayOffEmmp(id);
@@ -171,7 +216,8 @@ export default function ListEmps() {
         }
   
   const hanadleUpdate=async(id)=>{
-    setShow(true);
+    
+    
     const response = await axios.get(baseUrl+'/'+id).catch((err) => {
       console.log(err);
       
@@ -185,11 +231,11 @@ export default function ListEmps() {
     setnameEmp(response.data["nameEmp"])
     setEmail(response.data["emailEmp"])
     setPhoneEmp(response.data["phoneEmp"])
-    setOccupation(response.data["occupation"])
+    //setOccupation(response.data["occupation"])
     setIdHoraire(response.data["horaireId"])
     setStatus(response.data["status"])
-    
-    //console.log(response.data)
+    setOccupation(response.data["departementId"])
+    setShow(true);
   }
     
   }
@@ -201,7 +247,7 @@ export default function ListEmps() {
       phoneEmp: phoneEmp,
       birthDay: birthDay,
       status: status,
-      occupation: occupation,
+      departementId: occupation,
       codeEmp: '',
       horaireId:idHoraire,
       urlPicture: '',
@@ -246,7 +292,7 @@ export default function ListEmps() {
     phoneEmp: phoneEmp,
     birthDay: birthDay,
     status: status,
-    occupation: occupation,
+    departementId: occupation,
     codeEmp: '',
     horaireId:idHoraire,
     urlPicture: '',
@@ -262,6 +308,8 @@ export default function ListEmps() {
     })
     .catch(function (error) {
       console.log(error);
+      handleClose();
+      setShowErro(true);
     });
   }
   //===============
@@ -277,6 +325,17 @@ export default function ListEmps() {
   
   }
   //===============
+  const getDepartements=async()=>{
+    const response = await axios.get(bUrl+"/GetDepartements").catch((err) => {
+      console.log(err);
+      
+    });  
+  if(response) {
+    setListDepartement(response.data);
+    console.log(response.data)
+  }
+  
+  }
   //===============
   const getEmps=async(codeEmpt,departementt)=>{
     setCodeEmp(codeEmpt);
@@ -290,7 +349,7 @@ export default function ListEmps() {
       baseUrl+="?";
     }
     if(departementt!=""){
-      baseUrl+="departement="+departementt;
+      baseUrl+="departementId="+departementt;
     }
     const response = await axios.get(baseUrl,{headers:{ 'Authorization':sessionStorage.getItem('access_token') }}).catch((err) => {
       console.log(err);
@@ -298,7 +357,7 @@ export default function ListEmps() {
     });  
   if(response) {
     setEmps(response.data);
-    //console.log(response.data)
+    console.log(response.data)
   }
   
   }
@@ -362,12 +421,14 @@ export default function ListEmps() {
     }
     getEmps(codeEmp,departement);
     getHoraires();
+    getDepartements();
     getPublicHolidays();
   },[]);
   const deleteDayOff=async(idEmp,idDayOff)=>{
     if(window.confirm("Etes vous sure de vouloir supprimer")){
       const response = await axios.delete(bUrl+'/deleteDayOffEmp?idEmp='+idEmp+'&idDayOff='+idDayOff).catch((err) => {
-      console.log(err);
+      //console.log(err);
+      setShowErro(true);
       
     });  
   if(response) {
@@ -424,13 +485,26 @@ export default function ListEmps() {
 </div>
 </div> */}
 <div className="my-4 p-3 container-search card-shadow">
-  <div>
+  {/* <div>
     <h5>Départements</h5>
   <input type="text" placeholder="Search..." className='input-sh' onChange={(e)=>getEmps(codeEmp,e.target.value)} value={departement}/>
+  </div> */}
+  <div>
+    <h5>Nº employés</h5>
+  <input type="text" placeholder="N..." className='input-sh' onChange={(e)=>getEmps(e.target.value,departement)} value={codeEmp}/>
   </div>
   <div>
-    <h5>N employés</h5>
-  <input type="text" placeholder="N..." className='input-sh' onChange={(e)=>getEmps(e.target.value,departement)} value={codeEmp}/>
+  <h5>Départements</h5>
+  <select class="input-sh" id="exampleFormControlSelect1" placeholder='Département' onChange={(e)=>getEmps(codeEmp,e.target.value)} value={departement}>
+          <option ></option>
+          {
+            listDepartement.length>0?listDepartement.map((d,i)=>{
+              return <option value={d.idDepartement}>{d.departementName}</option>
+            }):""
+          }
+          
+          
+</select>
   </div>
   
     
@@ -444,20 +518,20 @@ export default function ListEmps() {
 <table className="table card-shadow mt-2 list-table">
     <thead>
         <tr>
-            <th>id</th>
+            <th>Nº</th>
             <th>Nom</th>
             <th>Email</th>
-            <th>Phone</th>
-            <th>Code employer</th>
+            <th>Téléphone</th>
+            <th>Code employé</th>
              <th>Actions</th>
-             <th>Actions</th>
+             <th>Code QR</th>
         </tr>
     </thead>
     
    <tbody>
     {currentEmps.length > 0 ? currentEmps.map((e,i) => {
                  return <tr key={i}>
-                    <td>{e.idEmp}</td>
+                    <td>{i}</td>
                     <td>{e.nameEmp}</td>
                     <td>{e.emailEmp}</td>
                     <td>{e.phoneEmp}</td>
@@ -481,13 +555,26 @@ export default function ListEmps() {
       <div className='row'>
         <div className='col'>
         <ListHoraire listHoraires={horaire} getHoraires={getHoraires}/>
+        <ListDep ListDeps={listDepartement} getDeps={getDepartements}/>
         </div>
         <div className='col'>
         <LisPholidays listHoraires={pHoliday} getHolidays={getPublicHolidays}/>
         </div>
       </div>
       
-      
+      <Modal show={showError} onHide={handleCloseError} className="modal-sm">
+        <Modal.Header closeButton>
+          <Modal.Title>Erreure</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5 className='text-danger' style={{textAlign:'center'}}>Une erreure c'est produite!</h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseError}>
+            Fermer
+          </Button> 
+        </Modal.Footer>
+        </Modal>
       
       <Modal show={showD} onHide={handleCloseD} className="modal-lg">
         <Modal.Header closeButton>
@@ -570,14 +657,15 @@ export default function ListEmps() {
           <label class="form-check-label" for="exampleCheck1">Statu</label>
         </div>
         <div class="form-group">
+          
         <select class="form-control" id="exampleFormControlSelect1" placeholder='Département' onChange={(e)=>setOccupation(e.target.value)} value={occupation}>
-          <option >Département</option>
-          <option value={"IT suport"}>IT suport</option>
-          <option value={2}>2</option>
-          <option value={3}>3</option>
-          <option value={4}>4</option>
-          <option value={5}>5</option>
-        </select>
+          <option >Departements</option>
+          {
+            listDepartement.length>0?listDepartement.map((d,i)=>{
+              return <option value={d.idDepartement} selected={occupation == d.idDepartement} >{d.departementName}</option>
+            }):""
+          }
+          </select>
     </div>
     <div class="form-group">
         <select class="form-control" id="exampleFormControlSelect1" placeholder='Département' onChange={(e)=>setIdHoraire(e.target.value)}  value={idHoraire}>
@@ -613,7 +701,9 @@ export default function ListEmps() {
         <Modal.Body>
           <div className='contain'>
           <div className='row d-flex justify-content-center'>
-            <div className='col-md-3'><img src={employe.urlPicture} alt='img' className='w-100'/></div>
+            <div className='col-md-3'><input type="file" multiple ref={inputFile} hidden onChange={(e)=>handleFileChange(e)}/>
+            <img src={employe.urlPicture} alt='img' className='w-100 im-upload' onClick={(e)=>changerProfile(e,employe.idEmp)}/></div>
+            {/* <button className='btn' onClick={} >Changer</button> */}
             <div className='col-md-9'>
               <div className='row mb-2'>
                 <div className='col-3'>Nom:</div>
@@ -625,7 +715,7 @@ export default function ListEmps() {
               </div>
               <div className='row mb-2'>
                 <div className='col-3 '>Departement:</div>
-                <div className='col-9 fw-bold'>{employe.occupation}</div>
+                <div className='col-9 fw-bold'>{employe.departement!=null?employe.departement['departementName']:''}</div>
               </div>
               <div className='row mb-2'>
                 <div className='col-3'>Tel:</div>

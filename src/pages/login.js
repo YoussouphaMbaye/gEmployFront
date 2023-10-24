@@ -29,18 +29,21 @@ export default function Login() {
             sessionStorage.setItem('access_token','Bearer '+res.data);
            // console.log("BIEN BIEN BIEN")
             getEmployByEmail(username);
-            navigate('/');
+            
             
         }).catch((err)=>{
             if(err['response']){
             setUError(err['response']['data']);
             //console.log(err['response']['data']);
+          }else{
+            setUError("Une erreure c'est produite");
           }
         })
     }
     const getEmployByEmail=async(email)=>{
       const response = await axios.get(baseUrl+'/GetEmployerByemail?email='+email).catch((err) => {
         console.log(err);
+        setUError("Invalide email");
         
       });  
     if(response) {
@@ -48,6 +51,7 @@ export default function Login() {
       //console.log(response.data)
       sessionStorage.setItem('name',response.data.nameEmp);
       sessionStorage.setItem('idUser',response.data.idEmp);
+      navigate('/');
       //console.log(response.data.nameEmp);
     }
     }
@@ -76,28 +80,28 @@ export default function Login() {
                     <span className="h1 fw-bold mb-0">NAFA</span>
                   </div>
 
-                  <h5 className="fw-normal mb-3 pb-3" style={{letterSpacing: '1px'}}>Sign into your account</h5>
+                  <h5 className="fw-normal mb-3 pb-3" style={{letterSpacing: '1px'}}>Connectez-vous à votre compte</h5>
 
                   <div className="form-outline mb-4">
                     <input type="email" id="form2Example17" className="form-control form-control-lg" required onChange={(e) => setUsername(e.target.value)}  value={username}/>
-                    <label className="form-label" for="form2Example17">Email address</label>
+                    <label className="form-label" for="form2Example17">Email addresse</label>
                   </div>
 
                   <div className="form-outline mb-4">
                     <input type="password" id="form2Example27" className="form-control form-control-lg" required onChange={(e) => setpassword(e.target.value)}/>
-                    <label className="form-label" for="form2Example27" >Password</label>
+                    <label className="form-label" for="form2Example27" >Mot de passe</label>
                   </div>
 
                   <div className="pt-1 mb-4">
-                    <button className="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+                    <button className="btn btn-primary btn-lg btn-block" type="submit">Se connecter</button>
                   </div>
                   <br/>
                 {
                     (error!=="")?<p style={{color : 'red'}}>{error}</p>:""
                 }
-                  <a className="small text-muted" href="#!">Forgot password?</a>
-                  <p className="mb-5 pb-lg-2" style={{color: '#393f81'}}>Don't have an account? <a href="#!"
-                      style={{color: '#393f81'}}>Register here</a></p>
+                  <a className="small text-muted" href="#!">Mot de passe oublié?</a>
+                  <p className="mb-5 pb-lg-2" style={{color: '#393f81'}}>Vous n'avez pas de compte ? <a href="#!"
+                      style={{color: '#393f81'}}>Inscrivez-vous ici</a></p>
                   <a href="#!" className="small text-muted">Terms of use.</a>
                   <a href="#!" className="small text-muted">Privacy policy</a>
                 </form>

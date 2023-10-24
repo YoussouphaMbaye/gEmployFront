@@ -2,9 +2,17 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
+import Pagination from './Pagination';
 function LisPholidays({listHoraires,getHolidays}) {
 const [showH, setShowH] = useState(false);
 const [dateH, setDateH] = useState("");
+
+const [currentPage, setCurrentPage] = useState(1);
+const [postsPerPage, setPostsPerPage] = useState(5);
+
+const lastPostIndex = currentPage * postsPerPage;
+const firstPostIndex = lastPostIndex - postsPerPage;
+const currentHolidays = listHoraires.slice(firstPostIndex, lastPostIndex);
 
 const bUrl=process.env.REACT_APP_B_URL;
 
@@ -112,13 +120,13 @@ const handleShowH=()=>{
     <table className="table card-shadow mt-2 list-table">
     <thead>
         <tr>
-            <th>id</th>
+            <th>Nº</th>
             <th>Date</th>
         </tr>
     </thead>
     
    <tbody>
-    {listHoraires.length > 0 ? listHoraires.map((h,i) => {
+    {currentHolidays.length > 0 ? currentHolidays.map((h,i) => {
                  return <tr key={i}>
                     <td>{i}</td>
                     <td>{h.date}</td>
@@ -136,6 +144,8 @@ const handleShowH=()=>{
     </tbody>
     
 </table>
+{listHoraires.length>postsPerPage?
+<Pagination totalPosts={listHoraires.length} postsPerPage={postsPerPage} setCurrentPage={setCurrentPage} currentPage={currentPage}/>:""}
 </>
   )
 }

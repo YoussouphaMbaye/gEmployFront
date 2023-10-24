@@ -15,6 +15,7 @@ function ListMissingOrHier() {
     const [missOrhier, setMissOrhier] = useState("");
     const [nbEmp,setNbEmp]=useState(0);
     const navigate = useNavigate();
+    const [listDepartement,setListDepartement]=useState([]);
     const bUrl=process.env.REACT_APP_B_URL;
 
     useEffect(()=>{
@@ -27,9 +28,23 @@ function ListMissingOrHier() {
         
       }
       fetchData();
+      getDepartements();
         
         
       },[]);
+      //===============
+  const getDepartements=async()=>{
+    const response = await axios.get(bUrl+"/GetDepartements").catch((err) => {
+      console.log(err);
+      
+    });  
+  if(response) {
+    setListDepartement(response.data);
+    console.log(response.data)
+  }
+  
+  }
+  //===============
     //===============
     const getEmps=async()=>{
         const response = await axios.get(bUrl+"/missingOrHier").catch((err) => {
@@ -118,6 +133,12 @@ function ListMissingOrHier() {
       <h2 className='chif1'>{emps!=null?emps.nbHier:0}</h2>
     </div>
   </div>
+  <div className="col-sm-3 m-3">
+    <div className="static-card">
+      <h2>Départements</h2>
+      <h2 className='chif2'>{listDepartement.length}</h2>
+    </div>
+  </div>
   
   
 </div>
@@ -147,7 +168,7 @@ function ListMissingOrHier() {
         <table className="table card-shadow mt-2 list-table">
     <thead>
         <tr>
-            <th>id</th>
+            <th>Nº</th>
             <th>Nom</th>
             <th>Arrivé</th>
             <th>Départ</th>
@@ -163,7 +184,7 @@ function ListMissingOrHier() {
     {currentEmps!=null > 0 ? currentEmps.map((e,i) => {
       //console.log(e['employer'].IdEmp);
                  return <tr key={i}>
-                    <td>{e['employer'].idEmp}</td>
+                    <td>{i}</td>
                     <td>{e['employer'].nameEmp}</td>
                     <td>{e.hourGetIn}</td>
                     <td>{e.hourGetOut}</td>

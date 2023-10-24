@@ -36,7 +36,7 @@ const IdleTimeOutHandler = (props)=>{
             }else{
                 props.onIdle();
             }
-        },props.timeOutInterval?props.timeOutInterval:6000*10)
+        },props.timeOutInterval?props.timeOutInterval:8000*10)
         
         
     }

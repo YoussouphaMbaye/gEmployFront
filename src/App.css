@@ -49,6 +49,9 @@ nav ul li{
   padding: 15px;
   
 }
+.im-upload{
+  cursor: pointer;
+}
 .chif{
   border-radius: 50%;
   padding: 10px;
