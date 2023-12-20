@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { Navigate, redirect, useNavigate } from 'react-router-dom';
+import nafa12 from '../nafa12.png';
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -77,7 +78,8 @@ export default function Login() {
 
                   <div className="d-flex align-items-center mb-3 pb-1">
                     <i className="fas fa-cubes fa-2x me-3" style={{color: '#ff6219'}}></i>
-                    <span className="h1 fw-bold mb-0">NAFA</span>
+                    {/* <span className="h1 fw-bold mb-0">NAFA</span> */}
+                    <img src={nafa12} />
                   </div>
 
                   <h5 className="fw-normal mb-3 pb-3" style={{letterSpacing: '1px'}}>Connectez-vous à votre compte</h5>
